@@ -49,3 +49,7 @@ tasks:
   ping:
     desc: Pings device to check if connection is alive
     cmd: ping {{.IP}}
+
+  curl:
+    desc: Checks if webserver on fw is reachable
+    cmd: curl http://{{.IP}}
