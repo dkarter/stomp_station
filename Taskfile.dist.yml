@@ -16,6 +16,7 @@ tasks:
       Run this first when setting up the project.
     cmds:
       - echo "Installing project dependencies..."
+      - mise install
       - pip3 install -e ".[dev]"
       - echo "✅ Setup complete! You can now run 'task --list' to see available commands."
 
