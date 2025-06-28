@@ -1,0 +1,96 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+includes:
+  ci: taskfiles/ci.yml
+
+vars:
+  DEVICE: /dev/cu.usbmodem2101
+  MAIN_SCRIPT: src/wifi_led_server.py
+
+tasks:
+  setup:
+    desc: 'Install project dependencies'
+    summary: |
+      Install all project dependencies including development tools.
+      Run this first when setting up the project.
+    cmds:
+      - echo "Installing project dependencies..."
+      - pip3 install -e ".[dev]"
+      - echo "✅ Setup complete! You can now run 'task --list' to see available commands."
+
+  fw:upload:
+    desc: 'Upload a file to Pico W (inject secrets first)'
+    summary: |
+      Upload a file to the Pico W firmware. Secrets will be injected
+      from 1Password before uploading.
+
+      Usage: task fw:upload FILE=src/main.py
+             task fw:upload -- src/wifi_led_server.py
+    vars:
+      FILE: '{{.FILE | default .CLI_ARGS}}'
+      TARGET: '{{if eq .FILE "src/wifi_led_server.py"}}main.py{{else}}{{base .FILE}}{{end}}'
+    cmd: |
+      echo "Injecting secrets and uploading {{.FILE}} to /pyboard/{{.TARGET}}..."
+      op inject -i {{.FILE}} -o /tmp/injected_{{.TARGET}}
+      rshell -p {{.DEVICE}} cp /tmp/injected_{{.TARGET}} /pyboard/{{.TARGET}}
+      rm /tmp/injected_{{.TARGET}}
+
+  fw:restart:
+    desc: 'Restart the Pico W firmware'
+    cmd: python3 scripts/restart_pico.py {{.DEVICE}}
+
+  fw:deploy:
+    desc: 'Deploy main script (inject secrets + upload + restart)'
+    cmds:
+      - task: fw:upload
+        vars:
+          FILE: '{{.MAIN_SCRIPT}}'
+      - task: fw:restart
+
+  fw:monitor:
+    desc: 'Monitor serial output from Pico W'
+    cmd: python3 scripts/monitor_serial.py {{.DEVICE}}
+
+  fw:repl:
+    desc: 'Connect to Pico W REPL'
+    cmds:
+      - cmd: rshell -p {{.DEVICE}} repl
+
+  fw:ls:
+    desc: 'List files on Pico W'
+    cmds:
+      - rshell -p {{.DEVICE}} ls /pyboard
+
+  fw:shell:
+    desc: 'Open rshell to Pico W'
+    cmds:
+      - rshell -p {{.DEVICE}}
+
+  fw:status:
+    desc: 'Check WiFi connection status'
+    cmd: python3 scripts/check_wifi_status.py {{.DEVICE}}
+
+  format:
+    desc: 'Format Python code with black and isort'
+    cmds:
+      - echo "Formatting Python files..."
+      - black src/ scripts/
+      - isort src/ scripts/
+      - echo "Formatting complete!"
+
+  lint:
+    desc: 'Run linting and formatting checks'
+    cmds:
+      - echo "Running ruff linter..."
+      - ruff check src/ scripts/ --fix
+      - task: format
+      - echo "All checks passed!"
+
+  dev:
+    desc: 'Development workflow: deploy and monitor'
+    cmds:
+      - task: fw:deploy
+      - echo "Waiting 3 seconds for startup..."
+      - sleep 3
+      - task: fw:monitor

@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+  format:check:
+    desc: 'Check if code is properly formatted (CI mode)'
+    cmds:
+      - echo "Checking Python code formatting..."
+      - black --check --diff src/ scripts/
+      - isort --check-only --diff src/ scripts/
+      - echo "✅ Code formatting is correct"
+
+  lint:check:
+    desc: 'Run linting checks without fixing (CI mode)'
+    cmds:
+      - echo "Running ruff linter..."
+      - ruff check src/ scripts/
+      - echo "✅ Linting checks passed"
+
+  typos:check:
+    desc: 'Check for typos in code and documentation'
+    cmds:
+      - echo "Checking for typos..."
+      - typos
+      - echo "✅ No typos found"
+
+  test:
+    desc: 'Run tests (placeholder for future)'
+    cmds:
+      - echo "No tests configured yet"
+      - echo "✅ Tests would run here"
+
+  run:
+    desc: 'Run all CI checks'
+    cmds:
+      - echo "🚀 Running all CI checks..."
+      - task: format:check
+      - task: lint:check  
+      - task: typos:check
+      - task: test
+      - echo "✅ All CI checks passed!"
