@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+vars:
+  DEVICE: /dev/cu.usbmodem2101
+  MAIN_SCRIPT: src/wifi_led_server.py
+
+tasks:
+  upload:
+    desc: 'Upload a file to Pico W (inject secrets first)'
+    summary: |
+      Upload a file to the Pico W firmware. Secrets will be injected
+      from 1Password before uploading.
+
+      Usage: task fw:upload FILE=src/main.py
+             task fw:upload -- src/wifi_led_server.py
+    vars:
+      FILE: '{{.FILE | default .CLI_ARGS}}'
+      TARGET: '{{if eq .FILE "src/wifi_led_server.py"}}main.py{{else}}{{base .FILE}}{{end}}'
+    cmd: |
+      echo "Injecting secrets and uploading {{.FILE}} to /pyboard/{{.TARGET}}..."
+      op inject -i {{.FILE}} -o /tmp/injected_{{.TARGET}}
+      rshell -p {{.DEVICE}} cp /tmp/injected_{{.TARGET}} /pyboard/{{.TARGET}}
+      rm /tmp/injected_{{.TARGET}}
+
+  restart:
+    desc: 'Restart the Pico W firmware'
+    cmd: python3 scripts/restart_pico.py {{.DEVICE}}
+
+  deploy:
+    desc: 'Deploy main script (inject secrets + upload + restart)'
+    cmds:
+      - task: upload
+        vars:
+          FILE: '{{.MAIN_SCRIPT}}'
+      - task: restart
+
+  monitor:
+    desc: 'Monitor serial output from Pico W'
+    cmd: python3 scripts/monitor_serial.py {{.DEVICE}}
+
+  repl:
+    desc: 'Connect to Pico W REPL'
+    cmds:
+      - cmd: rshell -p {{.DEVICE}} repl
+
+  ls:
+    desc: 'List files on Pico W'
+    cmds:
+      - rshell -p {{.DEVICE}} ls /pyboard
+
+  shell:
+    desc: 'Open rshell to Pico W'
+    cmds:
+      - rshell -p {{.DEVICE}}
+
+  status:
+    desc: 'Check WiFi connection status'
+    cmd: python3 scripts/check_wifi_status.py {{.DEVICE}}
