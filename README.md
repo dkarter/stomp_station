@@ -13,20 +13,18 @@ A wireless foot switch using Raspberry Pi Pico W that can control music/video pl
 ## Quick Start
 
 1. **Install dependencies:**
+
    ```bash
    task setup
    ```
 
-2. **Set up WiFi credentials** (using 1Password):
-   - Configure your `.envrc` file with 1Password secret references
-   - Example: `export WIFI_SSID="$(op read 'op://Private/WiFi/SSID')"`
+1. **Deploy to Pico W:**
 
-3. **Deploy to Pico W:**
    ```bash
    task fw:deploy
    ```
 
-4. **Monitor output:**
+1. **Monitor output:**
    ```bash
    task fw:monitor
    ```
@@ -44,6 +42,7 @@ A wireless foot switch using Raspberry Pi Pico W that can control music/video pl
 ## Hardware Setup
 
 1. Connect LED to Pico W:
+
    - LED long leg → GP15
    - LED short leg → GND
    - (Resistor recommended but not required for testing)
@@ -68,8 +67,10 @@ foot_switch/
 ## Development
 
 The project uses modern Python tooling:
+
 - **Black** - Code formatting
-- **isort** - Import sorting  
+- **isort** - Import sorting
 - **Ruff** - Fast linting
 - **Task** - Build automation
-- **1Password** - Secure credential injection
+- **1Password CLI** - Secure credential injection
+
