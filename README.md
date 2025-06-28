@@ -2,6 +2,8 @@
 
 A wireless foot switch using Raspberry Pi Pico W that can control music/video playback on macOS by sending keystrokes wirelessly.
 
+![logo](./images/logo.png)
+
 ## Features
 
 - WiFi-enabled foot switch using Pico W
