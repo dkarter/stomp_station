@@ -1,4 +1,4 @@
-# Wireless Foot Switch
+# StompStation
 
 A wireless foot switch using Raspberry Pi Pico W that can control music/video playback on macOS by sending keystrokes wirelessly.
 
