@@ -1,41 +1,10 @@
 import socket
-import time
-
 import machine
-import network
-
-# WiFi credentials injected from 1Password
-WIFI_SSID = "op://Private/Home IoT Wifi/base station name"
-WIFI_PASS = "op://Private/Home IoT Wifi/base station password"
+from wifi_manager import connect_wifi
 
 led = machine.Pin(15, machine.Pin.OUT)
 led_state = False
 
-
-def connect_wifi():
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-
-    if not wlan.isconnected():
-        print("Connecting to WiFi...")
-        wlan.connect(WIFI_SSID, WIFI_PASS)
-
-        timeout = 10
-        while not wlan.isconnected() and timeout > 0:
-            time.sleep(1)
-            timeout -= 1
-            print(".")
-
-        if wlan.isconnected():
-            print("WiFi connected!")
-            print("IP address:", wlan.ifconfig()[0])
-            return wlan.ifconfig()[0]
-        else:
-            print("WiFi connection failed")
-            return None
-    else:
-        print("Already connected to WiFi")
-        return wlan.ifconfig()[0]
 
 
 def web_page():
@@ -149,11 +118,3 @@ def start_server(ip):
             conn.close()
 
 
-# Main execution
-print("Starting WiFi LED server...")
-ip = connect_wifi()
-
-if ip:
-    start_server(ip)
-else:
-    print("Could not connect to WiFi. Check credentials.")

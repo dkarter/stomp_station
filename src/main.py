@@ -1,15 +1,11 @@
-import time
+# Main entry point for Pico W
+from wifi_manager import connect_wifi
+from wifi_led_server import start_server
 
-import machine
+print("Starting WiFi LED server...")
+ip = connect_wifi()
 
-# Try pin 25 (onboard LED on Pico W)
-led = machine.Pin(25, machine.Pin.OUT)
-
-print("Starting LED blink...")
-for i in range(10):
-    print(f"Blink {i+1}")
-    led.on()
-    time.sleep(0.5)
-    led.off()
-    time.sleep(0.5)
-print("Done blinking")
+if ip:
+    start_server(ip)
+else:
+    print("Could not connect to WiFi. Check credentials.")

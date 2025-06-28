@@ -6,33 +6,20 @@ vars:
   MAIN_SCRIPT: src/wifi_led_server.py
 
 tasks:
-  upload:
-    desc: 'Upload a file to Pico W (inject secrets first)'
-    summary: |
-      Upload a file to the Pico W firmware. Secrets will be injected
-      from 1Password before uploading.
-
-      Usage: task fw:upload FILE=src/main.py
-             task fw:upload -- src/wifi_led_server.py
-    vars:
-      FILE: '{{.FILE | default .CLI_ARGS}}'
-      TARGET: '{{if eq .FILE "src/wifi_led_server.py"}}main.py{{else}}{{base .FILE}}{{end}}'
-    cmd: |
-      echo "Injecting secrets and uploading {{.FILE}} to /pyboard/{{.TARGET}}..."
-      op inject -i {{.FILE}} -o /tmp/injected_{{.TARGET}}
-      rshell -p {{.DEVICE}} cp /tmp/injected_{{.TARGET}} /pyboard/{{.TARGET}}
-      rm /tmp/injected_{{.TARGET}}
-
   restart:
     desc: 'Restart the Pico W firmware'
     cmd: python3 scripts/restart_pico.py {{.DEVICE}}
 
   deploy:
-    desc: 'Deploy main script (inject secrets + upload + restart)'
+    desc: 'Deploy entire src directory and restart'
     cmds:
-      - task: upload
-        vars:
-          FILE: '{{.MAIN_SCRIPT}}'
+      - cmd: echo "Injecting secrets into config.py..."
+      - cmd: op inject -i src/config.py -o /tmp/injected_config.py
+      - cmd: echo "Deploying all source files to Pico W..."
+      - cmd: rshell -p {{.DEVICE}} rsync src/ /pyboard/
+      - cmd: echo "Uploading config.py with injected secrets..."
+      - cmd: rshell -p {{.DEVICE}} cp /tmp/injected_config.py /pyboard/config.py
+      - cmd: rm /tmp/injected_config.py
       - task: restart
 
   monitor:
