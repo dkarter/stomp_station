@@ -4,6 +4,7 @@ version: '3'
 vars:
   DEVICE: /dev/cu.usbmodem2101
   MAIN_SCRIPT: src/wifi_led_server.py
+  IP: 10.0.0.78
 
 tasks:
   restart:
@@ -44,3 +45,7 @@ tasks:
   status:
     desc: 'Check WiFi connection status'
     cmd: python3 scripts/check_wifi_status.py {{.DEVICE}}
+
+  ping:
+    desc: Pings device to check if connection is alive
+    cmd: ping {{.IP}}
