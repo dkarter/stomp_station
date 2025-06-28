@@ -15,6 +15,8 @@ tasks:
     cmds:
       - echo "Running ruff linter..."
       - ruff check src/ scripts/
+      - echo "Checking YAML files..."
+      - yamllint .
       - echo "✅ Linting checks passed"
 
   typos:check:
@@ -35,7 +37,7 @@ tasks:
     cmds:
       - echo "🚀 Running all CI checks..."
       - task: format:check
-      - task: lint:check  
+      - task: lint:check
       - task: typos:check
       - task: test
       - echo "✅ All CI checks passed!"
