@@ -1,8 +1,10 @@
+<p align="center">
+  <img src="./images/logo.png" width="200" alt="logo">
+</p>
+
 # StompStation
 
 A wireless foot switch using Raspberry Pi Pico W that can control music/video playback on macOS by sending keystrokes wirelessly.
-
-![logo](./images/logo.png)
 
 ## Features
 
