@@ -1,7 +1,8 @@
 {
   "lineWidth": 120,
   "yaml": {
-    "quotes": "preferSingle"
+    "quotes": "preferSingle",
+    "formatComments": true
   },
   "plugins": [
     "https://plugins.dprint.dev/g-plane/markup_fmt-v0.22.0.wasm",
