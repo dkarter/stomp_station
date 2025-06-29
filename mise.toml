@@ -2,5 +2,6 @@
 committed = "latest"
 lefthook = "latest"
 python = "3.13"
+taplo = "latest"
 task = "latest"
 typos = "latest"

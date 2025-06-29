@@ -24,6 +24,8 @@ tasks:
       - echo "Formatting Python files..."
       - black src/ scripts/
       - isort src/ scripts/
+      - echo "Formatting TOML files..."
+      - taplo format
       - echo "Formatting complete!"
 
   lint:
