@@ -1,4 +1,5 @@
 [tools]
+lefthook = "latest"
 python = "3.13"
 task = "latest"
 typos = "latest"
