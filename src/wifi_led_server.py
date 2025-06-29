@@ -64,8 +64,13 @@ def web_page():
 
 def start_server(ip):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(("", 80))
-    s.listen(5)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        s.bind(("", 80))
+        s.listen(5)
+    except OSError as e:
+        print(f"Failed to start server: {e}")
+        return
 
     print(f"HTTP server running on http://{ip}")
     print("Available endpoints:")
