@@ -21,10 +21,7 @@ tasks:
   format:
     desc: 'Format Python code with black and isort'
     cmds:
-      - echo "Formatting Python files..."
-      - black src/ scripts/
-      - isort src/ scripts/
-      - echo "Formatting HTML/TOML/YAML files..."
+      - echo "Formatting files..."
       - dprint fmt
       - echo "Formatting complete!"
 

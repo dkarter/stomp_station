@@ -6,10 +6,7 @@ tasks:
     desc: 'Check if code is properly formatted (CI mode)'
     silent: true
     cmds:
-      - echo "Checking Python code formatting..."
-      - black --check --diff src/ scripts/
-      - isort --check-only --diff src/ scripts/
-      - echo "Checking HTML/TOML/YAML file formatting..."
+      - echo "Checking formatting..."
       - dprint check
       - echo "✅ Code formatting is correct"
 
