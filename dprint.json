@@ -1,9 +1,13 @@
 {
   "lineWidth": 120,
+  "yaml": {
+    "quotes": "preferSingle"
+  },
   "plugins": [
     "https://plugins.dprint.dev/g-plane/markup_fmt-v0.22.0.wasm",
-    "https://plugins.dprint.dev/toml-0.7.0.wasm"
+    "https://plugins.dprint.dev/toml-0.7.0.wasm",
+    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm"
   ],
-  "includes": ["**/*.html", "**/*.toml"],
+  "includes": ["**/*.html", "**/*.toml", "**/*.yaml", "**/*.yml"],
   "excludes": []
 }

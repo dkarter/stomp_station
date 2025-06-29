@@ -9,7 +9,7 @@ tasks:
       - echo "Checking Python code formatting..."
       - black --check --diff src/ scripts/
       - isort --check-only --diff src/ scripts/
-      - echo "Checking HTML/TOML file formatting..."
+      - echo "Checking HTML/TOML/YAML file formatting..."
       - dprint check
       - echo "✅ Code formatting is correct"
 

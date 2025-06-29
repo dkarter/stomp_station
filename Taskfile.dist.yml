@@ -24,7 +24,7 @@ tasks:
       - echo "Formatting Python files..."
       - black src/ scripts/
       - isort src/ scripts/
-      - echo "Formatting HTML/TOML files..."
+      - echo "Formatting HTML/TOML/YAML files..."
       - dprint fmt
       - echo "Formatting complete!"
 
