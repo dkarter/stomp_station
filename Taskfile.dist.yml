@@ -6,6 +6,10 @@ includes:
   fw: taskfiles/fw.yml
 
 tasks:
+  default:
+    silent: true
+    cmd: task -l
+
   setup:
     desc: 'Install project dependencies'
     summary: |
