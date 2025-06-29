@@ -9,6 +9,8 @@ tasks:
       - echo "Checking Python code formatting..."
       - black --check --diff src/ scripts/
       - isort --check-only --diff src/ scripts/
+      - echo "Checking HTML file formatting..."
+      - dprint check "src/**/*.html"
       - echo "Checking TOML file formatting..."
       - taplo format --check
       - echo "✅ Code formatting is correct"
