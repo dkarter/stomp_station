@@ -1,10 +1,9 @@
 import socket
+
 import machine
-from wifi_manager import connect_wifi
 
 led = machine.Pin(15, machine.Pin.OUT)
 led_state = False
-
 
 
 def web_page():
@@ -116,5 +115,3 @@ def start_server(ip):
         except Exception as e:
             print("Error:", e)
             conn.close()
-
-

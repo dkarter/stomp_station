@@ -1,6 +1,7 @@
 # boot.py - Runs on every boot (including hard-reset)
 import gc
 import time
+
 import machine
 
 print("=== Pico W Boot Sequence Starting ===")
