@@ -52,4 +52,4 @@ tasks:
 
   curl:
     desc: Checks if webserver on fw is reachable
-    cmd: curl http://{{.IP}}
+    cmd: curl --max-time 5 http://{{.IP}}
