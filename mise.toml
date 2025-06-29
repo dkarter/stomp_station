@@ -1,4 +1,5 @@
 [tools]
+committed = "latest"
 lefthook = "latest"
 python = "3.13"
 task = "latest"
