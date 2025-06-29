@@ -6,60 +6,61 @@ led = machine.Pin(15, machine.Pin.OUT)
 led_state = False
 
 
+def load_html_template():
+    try:
+        with open("index.html") as f:
+            return f.read()
+    except OSError:
+        return "<h1>Error: index.html not found</h1>"
+
+
 def web_page():
-    html = """<!DOCTYPE html>
-<html>
-<head>
-    <title>Pico W LED Control</title>
-    <style>
-        body { font-family: Arial; text-align: center; margin: 50px; }
-        .button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 8px;
-        }
-        .off { background-color: #f44336; }
-        .button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #status { font-weight: bold; font-size: 18px; }
-    </style>
-</head>
-<body>
-    <h1>Pico W LED Control</h1>
-    <p>LED Status: <span id="status">%s</span></p>
-    <p>
-        <button class="button" onclick="sendCommand('toggle')">Toggle LED</button>
-        <button class="button" onclick="sendCommand('on')">Turn ON</button>
-        <button class="button off" onclick="sendCommand('off')">Turn OFF</button>
-    </p>
+    template = load_html_template()
+    status = "ON" if led_state else "OFF"
+    return template.replace("{status}", status)
 
-    <script>
-        async function sendCommand(cmd) {
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(b => b.disabled = true);
 
-            try {
-                const response = await fetch('/' + cmd);
-                const data = await response.json();
-                document.getElementById('status').textContent = data.status.toUpperCase();
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Command failed');
-            } finally {
-                buttons.forEach(b => b.disabled = false);
-            }
-        }
-    </script>
-</body>
-</html>
-""" % (
-        "ON" if led_state else "OFF"
-    )
-    return html
+def build_response(content, content_type="text/html", status_code=200):
+    status_text = "OK" if status_code == 200 else "Error"
+    return f"HTTP/1.1 {status_code} {status_text}\r\nContent-Type: {content_type}\r\n\r\n{content}"
+
+
+def handle_toggle():
+    global led_state
+    led_state = not led_state
+    if led_state:
+        led.on()
+    else:
+        led.off()
+    return '{"status": "%s"}' % ("on" if led_state else "off")
+
+
+def handle_on():
+    global led_state
+    led_state = True
+    led.on()
+    return '{"status": "on"}'
+
+
+def handle_off():
+    global led_state
+    led_state = False
+    led.off()
+    return '{"status": "off"}'
+
+
+ROUTES = {
+    "/toggle": {"handler": handle_toggle, "description": "Toggle LED state"},
+    "/on": {"handler": handle_on, "description": "Turn LED on"},
+    "/off": {"handler": handle_off, "description": "Turn LED off"},
+}
+
+
+def print_endpoints():
+    print("Available endpoints:")
+    print("  GET /         - Web interface")
+    for path, route_info in ROUTES.items():
+        print(f"  GET {path:<8} - {route_info['description']}")
 
 
 def start_server(ip):
@@ -73,11 +74,7 @@ def start_server(ip):
         return
 
     print(f"HTTP server running on http://{ip}")
-    print("Available endpoints:")
-    print("  GET /         - Web interface")
-    print("  GET /toggle   - Toggle LED state")
-    print("  GET /on       - Turn LED on")
-    print("  GET /off      - Turn LED off")
+    print_endpoints()
 
     while True:
         try:
@@ -88,30 +85,13 @@ def start_server(ip):
                 request_line = request.split("\n")[0]
                 print("Request:", request_line)
 
-                global led_state
+                path = request_line.split(" ")[1] if len(request_line.split(" ")) > 1 else "/"
 
-                if "GET /toggle" in request:
-                    led_state = not led_state
-                    if led_state:
-                        led.on()
-                    else:
-                        led.off()
-                    response = 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{"status": "%s"}' % (
-                        "on" if led_state else "off"
-                    )
-
-                elif "GET /on" in request:
-                    led_state = True
-                    led.on()
-                    response = 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{"status": "on"}'
-
-                elif "GET /off" in request:
-                    led_state = False
-                    led.off()
-                    response = 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{"status": "off"}'
-
+                if path in ROUTES:
+                    json_response = ROUTES[path]["handler"]()
+                    response = build_response(json_response, "application/json")
                 else:
-                    response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + web_page()
+                    response = build_response(web_page())
 
                 conn.send(response.encode())
 

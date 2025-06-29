@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pico W LED Control</title>
+    <style>
+        body { font-family: Arial; text-align: center; margin: 50px; }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .off { background-color: #f44336; }
+        .button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #status { font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>Pico W LED Control</h1>
+    <p>LED Status: <span id="status">{status}</span></p>
+    <p>
+        <button class="button" onclick="sendCommand('toggle')">Toggle LED</button>
+        <button class="button" onclick="sendCommand('on')">Turn ON</button>
+        <button class="button off" onclick="sendCommand('off')">Turn OFF</button>
+    </p>
+
+    <script>
+        async function sendCommand(cmd) {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+
+            try {
+                const response = await fetch('/' + cmd);
+                const data = await response.json();
+                document.getElementById('status').textContent = data.status.toUpperCase();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Command failed');
+            } finally {
+                buttons.forEach(b => b.disabled = false);
+            }
+        }
+    </script>
+</body>
+</html>
