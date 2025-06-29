@@ -1,8 +1,7 @@
 {
   "lineWidth": 120,
-  "plugins": [
-    "https://plugins.dprint.dev/g-plane/markup_fmt-v0.11.0.wasm"
-  ],
+  "plugins": ["https://plugins.dprint.dev/g-plane/markup_fmt-v0.22.0.wasm"],
   "includes": ["**/*.html"],
   "excludes": []
 }
+
