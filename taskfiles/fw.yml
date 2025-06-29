@@ -15,7 +15,7 @@ tasks:
     desc: 'Deploy entire src directory and restart'
     cmds:
       - cmd: echo "Injecting secrets into config.py..."
-      - cmd: op inject -i src/config.py -o /tmp/injected_config.py
+      - cmd: op inject -f -i src/config.py -o /tmp/injected_config.py
       - cmd: echo "Deploying all source files to Pico W..."
       - cmd: rshell -p {{.DEVICE}} rsync src/ /pyboard/
       - cmd: echo "Uploading config.py with injected secrets..."
