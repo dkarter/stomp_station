@@ -2,6 +2,6 @@
 committed = "latest"
 dprint = "latest"
 lefthook = "latest"
-python = "3.13"
+python = "3.14.7"
 task = "latest"
 typos = "latest"
